@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lessico Greco Antico</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VARIABILI COLORI --- */
+        :root {
+            --greek-blue: #005A9C; /* Blu bandiera greca */
+            --sky-blue: #E0F7FA;   /* Azzurro cielo chiaro */
+            --marble: #Fdfdfd;     /* Bianco marmo */
+            --stone: #f0f0f0;      /* Grigio pietra */
+            --text-dark: #333;
+            --shadow: rgba(0, 0, 0, 0.2);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--sky-blue);
+            font-family: 'Noto Serif', serif;
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            background-image: linear-gradient(to bottom, #87CEEB, #E0F7FA); /* Cielo sfumato */
+        }
+
+        /* --- STRUTTURA TEMPIO --- */
+        .temple-container {
+            width: 90%;
+            max-width: 800px;
+            background-color: var(--marble);
+            margin: 40px 0;
+            box-shadow: 0 10px 30px var(--shadow);
+            position: relative;
+            padding-bottom: 50px;
+            border-bottom: 20px solid #ccc; /* Base del tempio (stilobate) */
+        }
+
+        /* Il "Timpano" (Tetto/Intestazione) */
+        header {
+            background-color: var(--marble);
+            border-bottom: 5px solid var(--greek-blue);
+            padding: 30px 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        /* Decorazione stile fregio */
+        header::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 10px;
+            right: 10px;
+            height: 10px;
+            border-top: 2px solid var(--greek-blue);
+            border-bottom: 2px solid var(--greek-blue);
+            background-image: repeating-linear-gradient(90deg, var(--greek-blue) 0, var(--greek-blue) 10px, transparent 10px, transparent 20px);
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            color: var(--greek-blue);
+            font-size: 2.5rem;
+            margin: 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-style: italic;
+        }
+
+        /* Colonne Laterali (Simulate con CSS) */
+        .columns-wrapper {
+            display: flex;
+            flex-direction: column;
+            padding: 0 40px; /* Spazio per le colonne laterali */
+            position: relative;
+            min-height: 400px;
+        }
+
+        .columns-wrapper::before, .columns-wrapper::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 30px;
+            background: repeating-linear-gradient(
+                90deg,
+                #e0e0e0,
+                #e0e0e0 5px,
+                #ffffff 10px,
+                #ffffff 15px
+            );
+            border-right: 1px solid #ccc;
+            border-left: 1px solid #ccc;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+
+        .columns-wrapper::before { left: 0; }
+        .columns-wrapper::after { right: 0; }
+
+        /* --- LISTA PAROLE --- */
+        .word-list {
+            list-style: none;
+            padding: 20px 0;
+            margin: 0;
+            text-align: center;
+        }
+
+        .word-item {
+            margin: 15px 0;
+        }
+
+        .greek-btn {
+            background-color: transparent;
+            border: 2px solid var(--greek-blue);
+            color: var(--greek-blue);
+            padding: 15px 30px;
+            font-size: 1.5rem;
+            font-family: 'Noto Serif', serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+            width: 80%;
+            max-width: 400px;
+        }
+
+        .greek-btn:hover {
+            background-color: var(--greek-blue);
+            color: white;
+            transform: scale(1.02);
+            box-shadow: 0 4px 10px rgba(0, 90, 156, 0.3);
+        }
+
+        /* --- MODALE (POPUP) --- */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 100; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.5); 
+            backdrop-filter: blur(3px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            border-top: 10px solid var(--greek-blue);
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from {opacity: 0; transform: translateY(-20px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: var(--greek-blue);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Tabelle Declinazioni */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--greek-blue);
+            color: white;
+            font-family: 'Cinzel', serif;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .lemma-title {
+            color: var(--greek-blue);
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+        
+        .lemma-meaning {
+            font-style: italic;
+            color: #555;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="temple-container">
+        <header>
+            <h1>Lexicon Graecum</h1>
+            <span class="subtitle">Clicca sulla parola per visualizzare la declinazione</span>
+        </header>
+
+        <div class="columns-wrapper">
+            <ul class="word-list" id="wordListContainer">
+                </ul>
+        </div>
+    </div>
+
+    <div id="declensionModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modalTitle" class="lemma-title"></h2>
+            <span id="modalMeaning" class="lemma-meaning"></span>
+            <div id="modalTableContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATASET DELLE PAROLE ---
+        const dictionary = [
+            {
+                word: "Ἄνθρωπος",
+                meaning: "Uomo, Essere umano (Sostantivo maschile, II declinazione)",
+                id: "anthropos",
+                forms: [
+                    { case: "Nominativo", sing: "ὁ ἄνθρωπος", plur: "οἱ ἄνθρωποι" },
+                    { case: "Genitivo", sing: "τοῦ ἀνθρώπου", plur: "τῶν ἀνθρώπων" },
+                    { case: "Dativo", sing: "τῷ ἀνθρώπῳ", plur: "τοῖς ἀνθρώποις" },
+                    { case: "Accusativo", sing: "τὸν ἄνθρωπον", plur: "τοὺς ἀνθρώπους" },
+                    { case: "Vocativo", sing: "ὦ ἄνθρωπε", plur: "ὦ ἄνθρωποι" }
+                ]
+            },
+            {
+                word: "Ψυχή",
+                meaning: "Anima, Soffio vitale (Sostantivo femminile, I declinazione)",
+                id: "psyche",
+                forms: [
+                    { case: "Nominativo", sing: "ἡ ψυχή", plur: "αἱ ψυχαί" },
+                    { case: "Genitivo", sing: "τῆς ψυχῆς", plur: "τῶν ψυχῶν" },
+                    { case: "Dativo", sing: "τῇ ψυχῇ", plur: "ταῖς ψυχαῖς" },
+                    { case: "Accusativo", sing: "τὴν ψυχήν", plur: "τὰς ψυχάς" },
+                    { case: "Vocativo", sing: "ὦ ψυχή", plur: "ὦ ψυχαί" }
+                ]
+            },
+            {
+                word: "Δῶρον",
+                meaning: "Dono (Sostantivo neutro, II declinazione)",
+                id: "doron",
+                forms: [
+                    { case: "Nominativo", sing: "τὸ δῶρον", plur: "τὰ δῶρα" },
+                    { case: "Genitivo", sing: "τοῦ δώρου", plur: "τῶν δώρων" },
+                    { case: "Dativo", sing: "τῷ δώρῳ", plur: "τοῖς δώροις" },
+                    { case: "Accusativo", sing: "τὸ δῶρον", plur: "τὰ δῶρα" },
+                    { case: "Vocativo", sing: "ὦ δῶρον", plur: "ὦ δῶρα" }
+                ]
+            },
+            {
+                word: "Πολίτης",
+                meaning: "Cittadino (Sostantivo maschile, I declinazione)",
+                id: "polites",
+                forms: [
+                    { case: "Nominativo", sing: "ὁ πολίτης", plur: "οἱ πολῖται" },
+                    { case: "Genitivo", sing: "τοῦ πολίτου", plur: "τῶν πολιτῶν" },
+                    { case: "Dativo", sing: "τῷ πολίτῃ", plur: "τοῖς πολίταις" },
+                    { case: "Accusativo", sing: "τὸν πολίτην", plur: "τοὺς πολίτας" },
+                    { case: "Vocativo", sing: "ὦ πολῖτα", plur: "ὦ πολῖται" }
+                ]
+            }
+        ];
+
+        // --- RENDERIZZAZIONE LISTA ---
+        const listContainer = document.getElementById('wordListContainer');
+        const modal = document.getElementById('declensionModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMeaning = document.getElementById('modalMeaning');
+        const modalTableContainer = document.getElementById('modalTableContainer');
+        const closeBtn = document.getElementsByClassName("close")[0];
+
+        // Genera i pulsanti
+        dictionary.forEach(entry => {
+            const li = document.createElement('li');
+            li.className = 'word-item';
+            
+            const btn = document.createElement('button');
+            btn.className = 'greek-btn';
+            btn.innerText = entry.word;
+            btn.onclick = () => openModal(entry);
+            
+            li.appendChild(btn);
+            listContainer.appendChild(li);
+        });
+
+        // Funzione per aprire il modale e generare la tabella
+        function openModal(entry) {
+            modalTitle.innerText = entry.word;
+            modalMeaning.innerText = entry.meaning;
+            
+            let tableHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Caso</th>
+                            <th>Singolare</th>
+                            <th>Plurale</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            entry.forms.forEach(row => {
+                tableHTML += `
+                    <tr>
+                        <td><strong>${row.case}</strong></td>
+                        <td>${row.sing}</td>
+                        <td>${row.plur}</td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `</tbody></table>`;
+            
+            // Aggiungi nota per il duale se necessario (qui omesso per semplicità)
+            tableHTML += `<p style="font-size:0.8rem; color:#666; margin-top:10px;">* Forme duali omesse per brevità.</p>`;
+
+            modalTableContainer.innerHTML = tableHTML;
+            modal.style.display = "flex";
+        }
+
+        // --- CHIUSURA MODALE ---
+        closeBtn.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
